@@ -6,18 +6,18 @@
  * WebAssembly (WASM) / WebGPU üzerinden 30-50ms sürede istemci tarafında çalıştırılmasını sağlar.
  */
 
-import * as ort from 'onnxruntime-web';
 import { SemanticAnalysisResult } from '@/types';
 import { VectorSimilarityCalculator } from './vectorUtils';
 
 export class OnnxSemanticEngine {
-  private static session: ort.InferenceSession | null = null;
+  private static session: unknown = null;
   private static isInitializing = false;
 
   /**
    * ONNX Model oturumunu ilklendirir ve IndexedDB / Cache API üzerinden önbellekler
    */
   public static async initializeModel(modelUrl = '/models/distilbert-tr-int8.onnx'): Promise<void> {
+    if (typeof window === 'undefined') return;
     if (this.session) return;
     if (this.isInitializing) {
       while (this.isInitializing) {
@@ -28,11 +28,11 @@ export class OnnxSemanticEngine {
 
     this.isInitializing = true;
     try {
-      // Configure ONNX Runtime Web execution providers (WebGPU -> WASM fallback)
+      // Dynamic import to prevent SSR bundle issues with ONNX Wasm/Node bindings
+      const ort = await import('onnxruntime-web');
       ort.env.wasm.numThreads = 4;
       ort.env.wasm.simd = true;
 
-      // Create inference session
       this.session = await ort.InferenceSession.create(modelUrl, {
         executionProviders: ['webgpu', 'wasm'],
         graphOptimizationLevel: 'all',
@@ -88,7 +88,6 @@ export class OnnxSemanticEngine {
   }
 
   private static generateFallbackEmbedding(text: string): number[] {
-    // Generate deterministic 128-dim normalized semantic embedding vector
     const vector = new Array(128).fill(0);
     let hash = 0;
     for (let i = 0; i < text.length; i++) {
@@ -100,7 +99,6 @@ export class OnnxSemanticEngine {
       vector[i] = Math.sin(hash + i * 0.1);
     }
 
-    // L2 Normalize vector
     const norm = Math.sqrt(vector.reduce((sum, val) => sum + val * val, 0));
     return vector.map((val) => val / (norm || 1));
   }

@@ -1,6 +1,8 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ['onnxruntime-web'],
+  },
   webpack: (config, { isServer }) => {
     config.experiments = {
       ...config.experiments,
@@ -16,6 +18,14 @@ const nextConfig: NextConfig = {
         crypto: false,
       };
     }
+
+    config.module.rules.push({
+      test: /onnxruntime-web\/.*\.mjs$/,
+      type: 'javascript/auto',
+      resolve: {
+        fullySpecified: false,
+      },
+    });
 
     return config;
   },
