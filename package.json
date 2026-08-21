@@ -1,5 +1,5 @@
 {
-  "name": "sentez-temp",
+  "name": "sentez",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "next": "16.3.2",
+    "onnxruntime-web": "^1.27.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
