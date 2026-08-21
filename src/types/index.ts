@@ -11,24 +11,46 @@ export type KeyEventType = 'keydown' | 'keyup';
 export interface KeystrokeTimingEvent {
   key: string;
   eventType: KeyEventType;
-  timestamp: number; // Milliseconds high-res timer (performance.now())
+  timestamp: number;
 }
 
-export interface KeystrokeFeatureVector {
-  dwellTimeMean: number;      // Key press duration (keyup - keydown)
-  dwellTimeStdDev: number;    // Standard deviation of press duration
-  flightTimeMean: number;     // Time between keyup of N and keydown of N+1
-  flightTimeStdDev: number;   // Standard deviation of flight times
-  typingSpeedCPM: number;     // Characters per minute
-  rhythmVariance: number;     // Entropy/Variance in typing cadence
+export interface MousePoint {
+  x: number;
+  y: number;
+  timestamp: number;
+}
+
+export interface BiometricFeatures {
+  // Keystroke
+  dwellTimeMean: number;
+  dwellTimeStdDev: number;
+  flightTimeMean: number;
+  flightTimeStdDev: number;
+  typingSpeedCPM: number;
+  
+  // Mouse & Motion Jitter
+  mouseSpeedMean: number;
+  mouseJitterEntropy: number; // Micro-tremor curvature (human vs linear bot)
+  linearPathRatio: number;   // 1.0 = perfectly straight bot line, <0.8 = human curve
+  
+  // Clipboard & Event Integrity
+  syntheticPasteCount: number;
+  eventSequenceIntegrity: number; // 0.0 - 1.0 (focus -> hover -> click sequence)
+
   totalEvents: number;
 }
 
 export interface BotAnalysisResult {
   botScore: number;           // Probability score 0.0 (human) to 1.0 (bot)
-  isBot: boolean;             // Threshold based flag (e.g. > 0.75)
-  confidence: number;         // Statistical confidence level
-  features: KeystrokeFeatureVector;
+  isBot: boolean;
+  confidence: number;
+  vectorBreakdown: {
+    keystrokeScore: number;
+    mouseJitterScore: number;
+    clipboardScore: number;
+    eventIntegrityScore: number;
+  };
+  features: BiometricFeatures;
   timestamp: number;
 }
 
@@ -69,6 +91,33 @@ export interface ContentBadgeState {
 }
 
 // ==========================================
+// SOSYAL AĞ (META / X STİLİ) POST MODELİ
+// ==========================================
+
+export interface SocialPost {
+  id: string;
+  authorName: string;
+  authorHandle: string;
+  authorAvatar: string;
+  timestamp: string;
+  content: string;
+  mediaUrl?: string;
+  likes: number;
+  reposts: number;
+  comments: number;
+  isBridgeContent?: boolean;
+  communityId?: number;
+  badge: {
+    status: SecurityStatusLevel;
+    meritScore: number;
+    botScore: number;
+    isClickbait: boolean;
+    isManipulatedMedia: boolean;
+    inferenceTimeMs: number;
+  };
+}
+
+// ==========================================
 // KATMAN 3: GRAF TABANLI AKIŞ KATMANI TYPES
 // ==========================================
 
@@ -83,9 +132,9 @@ export interface InteractionEdge {
 
 export interface CommunityDetectionResult {
   modularityScore: number;
-  userCommunityMap: Map<string, number>; // UserId -> CommunityId
+  userCommunityMap: Map<string, number>;
   communityClusters: Record<number, string[]>;
-  echoChambers: number[]; // Community IDs flagged as echo chambers
+  echoChambers: number[];
 }
 
 export interface BridgeContentRecommendation {
@@ -101,6 +150,7 @@ export interface BridgeContentRecommendation {
 // ==========================================
 
 export type WorkerMessageType =
+  | 'ANALYZE_BIOMETRICS'
   | 'ANALYZE_KEYSTROKE'
   | 'ANALYZE_PHASH'
   | 'SEMANTIC_INFERENCE'

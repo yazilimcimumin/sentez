@@ -1,15 +1,11 @@
 /**
  * Sentez Katman 1: İstemci Güvenlik Katmanı
  * Keystroke Dynamics (Klavye Vuruş Ritmi) Bot Tespit Modülü
- *
- * %100 İstemci Tarafında, milisaniyelik hassasiyette (performance.now()) çalışır.
- * Klavye vuruşlarının basılı kalma süresi (Dwell Time), tuşlar arası uçuş süresi (Flight Time)
- * ve varyasyon istatistiklerini hesaplayarak otomasyon / bot skoru üretir.
  */
 
 import {
   KeystrokeTimingEvent,
-  KeystrokeFeatureVector,
+  BiometricFeatures,
   BotAnalysisResult,
 } from '@/types';
 
@@ -24,38 +20,22 @@ export class KeystrokeDynamicsAnalyzer {
     this.botThreshold = botThreshold;
   }
 
-  /**
-   * Keydown olayını milisaniye hassasiyetinde kaydeder
-   */
   public recordKeyDown(key: string, customTimestamp?: number): void {
     const timestamp = customTimestamp ?? performance.now();
-    
-    // Ignore modifier keys that distort rhythm analysis
     if (this.isIgnoredKey(key)) return;
-
-    // Record initial keydown if not repeating
     if (!this.activeKeyDownMap.has(key)) {
       this.activeKeyDownMap.set(key, timestamp);
     }
-
     this.pushEvent({ key, eventType: 'keydown', timestamp });
   }
 
-  /**
-   * Keyup olayını milisaniye hassasiyetinde kaydeder
-   */
   public recordKeyUp(key: string, customTimestamp?: number): void {
     const timestamp = customTimestamp ?? performance.now();
-
     if (this.isIgnoredKey(key)) return;
-
     this.activeKeyDownMap.delete(key);
     this.pushEvent({ key, eventType: 'keyup', timestamp });
   }
 
-  /**
-   * Mevcut vuruş serisini analiz edip Bot Skoru üretir
-   */
   public analyze(): BotAnalysisResult {
     const features = this.extractFeatures();
     const botScore = this.calculateBotScore(features);
@@ -65,39 +45,20 @@ export class KeystrokeDynamicsAnalyzer {
       botScore: Number(botScore.toFixed(4)),
       isBot,
       confidence: this.calculateConfidence(features.totalEvents),
+      vectorBreakdown: {
+        keystrokeScore: Number(botScore.toFixed(2)),
+        mouseJitterScore: 0,
+        clipboardScore: 0,
+        eventIntegrityScore: 1,
+      },
       features,
       timestamp: Date.now(),
     };
   }
 
-  /**
-   * Arabelleği temizler
-   */
   public reset(): void {
     this.events = [];
     this.activeKeyDownMap.clear();
-  }
-
-  /**
-   * HTML Girdi alanlarına otomatik dinleyici bağlar
-   */
-  public attachListeners(element: HTMLElement): () => void {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      this.recordKeyDown(e.key);
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      this.recordKeyUp(e.key);
-    };
-
-    element.addEventListener('keydown', handleKeyDown as EventListener);
-    element.addEventListener('keyup', handleKeyUp as EventListener);
-
-    // Detach cleanup callback
-    return () => {
-      element.removeEventListener('keydown', handleKeyDown as EventListener);
-      element.removeEventListener('keyup', handleKeyUp as EventListener);
-    };
   }
 
   private pushEvent(event: KeystrokeTimingEvent): void {
@@ -112,14 +73,9 @@ export class KeystrokeDynamicsAnalyzer {
     return ignored.includes(key);
   }
 
-  /**
-   * Dwell Time, Flight Time ve Hız Vektörlerini Çıkarır
-   */
-  private extractFeatures(): KeystrokeFeatureVector {
+  private extractFeatures(): BiometricFeatures {
     const dwellTimes: number[] = [];
     const flightTimes: number[] = [];
-
-    // Pair up keydown and keyup events for Dwell Time
     const keyDownMap = new Map<string, number>();
 
     for (let i = 0; i < this.events.length; i++) {
@@ -130,7 +86,7 @@ export class KeystrokeDynamicsAnalyzer {
         const pressTime = keyDownMap.get(event.key);
         if (pressTime !== undefined) {
           const dwell = event.timestamp - pressTime;
-          if (dwell >= 0 && dwell < 5000) { // filter extreme anomalies
+          if (dwell >= 0 && dwell < 5000) {
             dwellTimes.push(dwell);
           }
           keyDownMap.delete(event.key);
@@ -138,7 +94,6 @@ export class KeystrokeDynamicsAnalyzer {
       }
     }
 
-    // Calculate Flight Time between consecutive key strokes
     for (let i = 0; i < this.events.length - 1; i++) {
       const curr = this.events[i];
       const next = this.events[i + 1];
@@ -151,14 +106,12 @@ export class KeystrokeDynamicsAnalyzer {
       }
     }
 
-    // Statistical Calculations
     const dwellTimeMean = this.calculateMean(dwellTimes);
     const dwellTimeStdDev = this.calculateStdDev(dwellTimes, dwellTimeMean);
 
     const flightTimeMean = this.calculateMean(flightTimes);
     const flightTimeStdDev = this.calculateStdDev(flightTimes, flightTimeMean);
 
-    // Typing speed calculation (Characters per minute)
     let typingSpeedCPM = 0;
     if (this.events.length >= 2) {
       const startTime = this.events[0].timestamp;
@@ -169,69 +122,48 @@ export class KeystrokeDynamicsAnalyzer {
       }
     }
 
-    // Combined rhythm variance
-    const rhythmVariance = (dwellTimeStdDev + flightTimeStdDev) / 2;
-
     return {
       dwellTimeMean: Number(dwellTimeMean.toFixed(2)),
       dwellTimeStdDev: Number(dwellTimeStdDev.toFixed(2)),
       flightTimeMean: Number(flightTimeMean.toFixed(2)),
       flightTimeStdDev: Number(flightTimeStdDev.toFixed(2)),
       typingSpeedCPM: Number(typingSpeedCPM.toFixed(2)),
-      rhythmVariance: Number(rhythmVariance.toFixed(2)),
+      mouseSpeedMean: 0,
+      mouseJitterEntropy: 0.15,
+      linearPathRatio: 0.75,
+      syntheticPasteCount: 0,
+      eventSequenceIntegrity: 1,
       totalEvents: this.events.length,
     };
   }
 
-  /**
-   * İstatistiksel Verilerden Bot Skoru Hesaplama (0.0 - 1.0)
-   */
-  private calculateBotScore(features: KeystrokeFeatureVector): number {
+  private calculateBotScore(features: BiometricFeatures): number {
     if (features.totalEvents < 6) {
-      // Yetersiz veri - nötr skor
       return 0.1;
     }
 
     let score = 0.0;
+    if (features.dwellTimeStdDev < 2.0) score += 0.35;
+    else if (features.dwellTimeStdDev < 5.0) score += 0.15;
 
-    // 1. Dwell Time Variance Anomalisı (İnsan tuşu tam olarak aynı süre basılı tutamaz)
-    if (features.dwellTimeStdDev < 2.0) { // Robotik mükemmel zamanlama (<2ms)
-      score += 0.35;
-    } else if (features.dwellTimeStdDev < 5.0) {
-      score += 0.15;
-    }
+    if (features.flightTimeStdDev < 3.0) score += 0.35;
+    else if (features.flightTimeStdDev < 8.0) score += 0.15;
 
-    // 2. Flight Time Anomalisı (Sıfır veya sabit milisaniyelik gecikme)
-    if (features.flightTimeStdDev < 3.0) {
-      score += 0.35;
-    } else if (features.flightTimeStdDev < 8.0) {
-      score += 0.15;
-    }
+    if (features.typingSpeedCPM > 1200) score += 0.40;
+    else if (features.typingSpeedCPM > 800) score += 0.20;
 
-    // 3. Aşırı Yazma Hızı (Super-human typing speed > 1000 CPM)
-    if (features.typingSpeedCPM > 1200) { // Otomatik script yapıştırma
-      score += 0.40;
-    } else if (features.typingSpeedCPM > 800) {
-      score += 0.20;
-    }
-
-    // 4. Aşırı düşük dwell süresi (Microsecond instant synthetic keystrokes)
-    if (features.dwellTimeMean < 8.0) {
-      score += 0.25;
-    }
+    if (features.dwellTimeMean < 8.0) score += 0.25;
 
     return Math.min(1.0, Math.max(0.0, score));
   }
 
   private calculateConfidence(totalEvents: number): number {
-    // 20+ event veren veri setinde %95+ güvenilirlik
     return Math.min(1.0, totalEvents / 20);
   }
 
   private calculateMean(values: number[]): number {
     if (values.length === 0) return 0;
-    const sum = values.reduce((acc, val) => acc + val, 0);
-    return sum / values.length;
+    return values.reduce((acc, val) => acc + val, 0) / values.length;
   }
 
   private calculateStdDev(values: number[], mean: number): number {
