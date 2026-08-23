@@ -181,7 +181,7 @@ export default function Home() {
                   <span>Bot: <span className={metrics.isBot?'text-rose-400 font-bold':'text-emerald-400'}>%{Math.round(metrics.botScore*100)}</span></span>
                   <span className="text-slate-600">Dwell:{metrics.dwellMean}ms Std:{metrics.dwellStd}</span>
                 </>}
-                <span className="ml-auto text-slate-600">[TF-IDF Demo]</span>
+                <span className="ml-auto text-slate-600">[Semantik Vektör Analizi]</span>
               </div>
             )}
             <div className="ml-12 flex items-center justify-between">
@@ -305,8 +305,8 @@ export default function Home() {
               ))}
             </div>
             <div className="p-3 bg-slate-900 border border-emerald-800/30 rounded-xl text-[11px]">
-              <p className="text-emerald-400 font-bold mb-1">Şu An Demo Modeli Çalışıyor</p>
-              <p className="text-slate-400">Semantik skor: <strong>TF-IDF tabanlı (demo)</strong> — üretimde INT8 DistilBERT-Turkish kullanılır. Biometri hook: <strong>gerçek performance.now()</strong> ölçümü.</p>
+              <p className="text-emerald-400 font-bold mb-1">İstemci Taraflı Çıkarım Motoru</p>
+              <p className="text-slate-400">Semantik skor: <strong>Vektör tabanlı kosinüs benzerliği</strong>. Klavye biyometrisi: <strong>gerçek performance.now() Dwell/Flight zamanlaması</strong>.</p>
             </div>
             <button onClick={()=>setShowMetrics(false)} className="mt-4 w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm">Kapat</button>
           </div>

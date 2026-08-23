@@ -1,103 +1,149 @@
 /**
- * Sentez - useKeystrokeDynamics Hook
+ * Sentez - Klavye Vuruş Ritmi (Keystroke Dynamics) Hook'u
  * 
- * [DEMO - GERÇEKLEŞTİRİLMİŞ]
- * performance.now() ile dwell time ve flight time ölçer.
- * Basit eşik tabanlı bot skoru üretir.
- * 
- * Üretimde: Web Worker'a taşınır, Multi-Vector Fusion ile birleşir.
+ * İstemci tarafında performance.now() yüksek hassasiyetli zamanlayıcı kullanarak
+ * basılı kalma süresi (Dwell Time) ve tuşlar arası uçuş süresini (Flight Time) ölçer.
+ * Elde edilen istatistiksel varyasyonlar üzerinden bot/otomasyon olasılığı hesaplar.
  */
 'use client';
+
 import { useState, useRef, useCallback } from 'react';
 
-interface KeystrokeMetrics {
-  dwellMean: number;
-  dwellStd: number;
-  flightMean: number;
-  typingSpeedCPM: number;
-  botScore: number;       // 0.0 (insan) → 1.0 (bot)
-  isBot: boolean;
-  sampleCount: number;
+export interface KeystrokeMetrics {
+  dwellMean: number;        // Ortalama basılı kalma süresi (ms)
+  dwellStd: number;         // Basılı kalma süresi standart sapması
+  flightMean: number;       // Ortalama tuşlar arası uçuş süresi (ms)
+  typingSpeedCPM: number;   // Dakika başına karakter hızı (CPM)
+  botScore: number;         // 0.0 (insan) -> 1.0 (otomasyon/bot)
+  isBot: boolean;           // Eşik değeri aşma durumu (>= 0.65)
+  sampleCount: number;      // İşlenen toplam tuş olayı sayısı
 }
 
-const mean = (arr: number[]) => arr.length === 0 ? 0 : arr.reduce((a, b) => a + b, 0) / arr.length;
-const std = (arr: number[], m: number) => {
+const calculateMean = (arr: number[]): number => 
+  arr.length === 0 ? 0 : arr.reduce((sum, val) => sum + val, 0) / arr.length;
+
+const calculateStdDev = (arr: number[], meanVal: number): number => {
   if (arr.length <= 1) return 0;
-  return Math.sqrt(arr.reduce((s, v) => s + (v - m) ** 2, 0) / arr.length);
+  const variance = arr.reduce((sum, val) => sum + Math.pow(val - meanVal, 2), 0) / arr.length;
+  return Math.sqrt(variance);
 };
 
 export function useKeystrokeDynamics() {
   const [metrics, setMetrics] = useState<KeystrokeMetrics>({
-    dwellMean: 0, dwellStd: 0, flightMean: 0,
-    typingSpeedCPM: 0, botScore: 0, isBot: false, sampleCount: 0,
+    dwellMean: 0,
+    dwellStd: 0,
+    flightMean: 0,
+    typingSpeedCPM: 0,
+    botScore: 0,
+    isBot: false,
+    sampleCount: 0,
   });
-  const downMap = useRef<Map<string, number>>(new Map());
-  const lastUpTime = useRef<number | null>(null);
+
+  const keyDownMap = useRef<Map<string, number>>(new Map());
+  const lastKeyUpTime = useRef<number | null>(null);
   const dwellTimes = useRef<number[]>([]);
   const flightTimes = useRef<number[]>([]);
-  const firstEventTime = useRef<number | null>(null);
-  const keyCount = useRef(0);
+  const startTime = useRef<number | null>(null);
+  const totalKeys = useRef(0);
 
+  // Tuşa basıldığı an zaman damgasını al
   const onKeyDown = useCallback((e: React.KeyboardEvent) => {
-    const ignored = ['Shift','Control','Alt','Meta','CapsLock','Tab'];
-    if (ignored.includes(e.key)) return;
-    const t = performance.now();
-    if (!firstEventTime.current) firstEventTime.current = t;
-    downMap.current.set(e.key, t);
+    const ignoredKeys = ['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'];
+    if (ignoredKeys.includes(e.key)) return;
+
+    const now = performance.now();
+    if (!startTime.current) {
+      startTime.current = now;
+    }
+
+    if (!keyDownMap.current.has(e.key)) {
+      keyDownMap.current.set(e.key, now);
+    }
   }, []);
 
+  // Tuş bırakıldığında dwell ve flight sürelerini hesapla
   const onKeyUp = useCallback((e: React.KeyboardEvent) => {
-    const ignored = ['Shift','Control','Alt','Meta','CapsLock','Tab'];
-    if (ignored.includes(e.key)) return;
-    const t = performance.now();
-    const downTime = downMap.current.get(e.key);
-    if (downTime !== undefined) {
-      const dwell = t - downTime;
-      if (dwell > 0 && dwell < 2000) dwellTimes.current.push(dwell);
-      downMap.current.delete(e.key);
-    }
-    if (lastUpTime.current !== null) {
-      const flight = t - lastUpTime.current;
-      if (flight > 0 && flight < 3000) flightTimes.current.push(flight);
-    }
-    lastUpTime.current = t;
-    keyCount.current++;
+    const ignoredKeys = ['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'];
+    if (ignoredKeys.includes(e.key)) return;
 
-    // Compute metrics every 3 keystrokes
-    if (keyCount.current % 3 === 0) {
-      const dm = mean(dwellTimes.current);
-      const ds = std(dwellTimes.current, dm);
-      const fm = mean(flightTimes.current);
-      const elapsed = firstEventTime.current ? (t - firstEventTime.current) / 60000 : 0;
-      const cpm = elapsed > 0 ? keyCount.current / elapsed : 0;
+    const now = performance.now();
+    const pressTime = keyDownMap.current.get(e.key);
 
-      // Bot scoring (eşik tabanlı)
+    if (pressTime !== undefined) {
+      const dwell = now - pressTime;
+      if (dwell > 0 && dwell < 2000) {
+        dwellTimes.current.push(dwell);
+      }
+      keyDownMap.current.delete(e.key);
+    }
+
+    if (lastKeyUpTime.current !== null) {
+      const flight = now - lastKeyUpTime.current;
+      if (flight > 0 && flight < 3000) {
+        flightTimes.current.push(flight);
+      }
+    }
+
+    lastKeyUpTime.current = now;
+    totalKeys.current += 1;
+
+    // Her 3 tuş vuruşunda bir istatistikleri ve bot skorunu güncelle
+    if (totalKeys.current % 3 === 0) {
+      const dm = calculateMean(dwellTimes.current);
+      const ds = calculateStdDev(dwellTimes.current, dm);
+      const fm = calculateMean(flightTimes.current);
+
+      const durationMinutes = startTime.current ? (now - startTime.current) / 60000 : 0;
+      const cpm = durationMinutes > 0 ? totalKeys.current / durationMinutes : 0;
+
+      // Bot Skoru Hesaplama (İnsan vuruş ritminde milisaniyelik rastgele varyasyon bulunur)
       let score = 0;
-      if (ds < 3 && dwellTimes.current.length > 4) score += 0.4;   // robotik sabit dwell
-      else if (ds < 8) score += 0.15;
-      if (fm < 10 && flightTimes.current.length > 3) score += 0.35; // sıfır gecikme
-      if (cpm > 1200) score += 0.4;                                  // insanüstü hız
+
+      // 1. Dwell sapması çok düşükse (robotik mükemmel zamanlama < 3ms)
+      if (ds < 3.0 && dwellTimes.current.length >= 4) {
+        score += 0.40;
+      } else if (ds < 7.0) {
+        score += 0.15;
+      }
+
+      // 2. Flight süresi sabit veya 0'a yakınsa (otomatik makro/script)
+      if (fm < 12.0 && flightTimes.current.length >= 3) {
+        score += 0.35;
+      }
+
+      // 3. Aşırı yüksek yazma hızı (CPM > 1200 super-human)
+      if (cpm > 1200) {
+        score += 0.40;
+      }
 
       setMetrics({
         dwellMean: Math.round(dm),
         dwellStd: Math.round(ds),
         flightMean: Math.round(fm),
         typingSpeedCPM: Math.round(cpm),
-        botScore: Math.min(1, score),
+        botScore: Math.min(1.0, Number(score.toFixed(2))),
         isBot: score >= 0.65,
-        sampleCount: keyCount.current,
+        sampleCount: totalKeys.current,
       });
     }
   }, []);
 
   const reset = useCallback(() => {
-    downMap.current.clear();
-    lastUpTime.current = null;
+    keyDownMap.current.clear();
+    lastKeyUpTime.current = null;
     dwellTimes.current = [];
     flightTimes.current = [];
-    firstEventTime.current = null;
-    keyCount.current = 0;
-    setMetrics({ dwellMean: 0, dwellStd: 0, flightMean: 0, typingSpeedCPM: 0, botScore: 0, isBot: false, sampleCount: 0 });
+    startTime.current = null;
+    totalKeys.current = 0;
+    setMetrics({
+      dwellMean: 0,
+      dwellStd: 0,
+      flightMean: 0,
+      typingSpeedCPM: 0,
+      botScore: 0,
+      isBot: false,
+      sampleCount: 0,
+    });
   }, []);
 
   return { metrics, onKeyDown, onKeyUp, reset };

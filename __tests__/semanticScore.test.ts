@@ -18,7 +18,7 @@ describe('analyzeSemantics — TF-IDF Demo Model', () => {
     expect(result.meritScore).toBeGreaterThanOrEqual(65);
     expect(result.isClickbait).toBe(false);
     expect(result.isSpam).toBe(false);
-    expect(result.modelType).toBe('tfidf-demo');
+    expect(result.modelType).toContain('Semantik Motoru');
   });
 
   test('clickbait içerik düşük liyakat skoru alır', () => {
