@@ -1,72 +1,74 @@
 # 🛡️ Sentez - Uçta Sosyal Yapay Zekâ ve Güvenlik Motoru (Edge Social AI)
 
-> **TEKNOFEST Sosyal İnovasyon Yarışması (Sosyal Yapay Zeka Tematik Alanı)** kapsamında geliştirilen; tamamen uçta hesaplama (client-side / edge computing) ilkelerine dayalı, sıfır dış API maliyetli ($0) ve KVKK/GDPR %100 doğal uyumlu yerli sosyal ağ altyapısı ve doğrulama motoru.
+> **TEKNOFEST Sosyal İnovasyon Yarışması (Sosyal Yapay Zeka Tematik Alanı)** kapsamında geliştirilen; tamamen uçta hesaplama (client-side / edge computing) ilkelerine dayalı, sıfır dış API maliyetli ($0) ve KVKK/GDPR %100 doğal uyumlu yerli sosyal ağ güvenlik ve akış doğrulama motoru.
 
 ---
 
-## 📌 Proje Hakkında
+## 📌 Proje Hakkında & NSosyal Entegrasyonu
 
-**Sentez**; sosyal medya platformlarındaki dezenformasyon, otomasyon (botnet) işgalleri, tık tuzakları (clickbait) ve toplumsal kutuplaşmayı derinleştiren filtre balonları (yankı odaları) krizlerine karşı kurgulanmış proaktif ve istemci taraflı bir mimaridir.
+**Sentez**, sosyal medya platformlarındaki (örneğin **NSosyal**) dezenformasyon, otomasyon (botnet) işgalleri, tık tuzakları (clickbait) ve toplumsal kutuplaşmayı derinleştiren filtre balonları (yankı odaları) krizlerine karşı kurgulanmış proaktif ve istemci taraflı bir güvenlik mimarisidir.
 
-Merkezi bulut sunucularına ve yüksek maliyetli kapalı kutu yapay zekâ API'lerine (OpenAI, Perspective vb.) olan bağımlılığı tamamen ortadan kaldırarak; tüm çıkarım (inference), grafik analizleri ve matematiksel hesaplamaları **doğrudan kullanıcının web tarayıcısında** gerçekleştirir.
+Sentez, NSosyal gibi mevcut sosyal medya platformlarının web arayüzlerine doğrudan bir **istemci katmanı (client-side layer)** olarak entegre edilmek üzere tasarlanmıştır. Merkezi bulut sunucularına ve yüksek maliyetli kapalı kutu yapay zekâ API'lerine (OpenAI, Perspective vb.) olan bağımlılığı tamamen ortadan kaldırarak tüm çıkarım ve matematiksel hesaplamaları **doğrudan kullanıcının web tarayıcısında** gerçekleştirir.
 
 ---
 
-## 🚀 Öne Çıkan Özellikler ve 3 Ana Katman
+## 🚀 3 Ana Katman ve Özellikler
 
 ### 🔒 Katman 1: İstemci Güvenlik Katmanı
-* **Keystroke Dynamics (Klavye Vuruş Ritmi Analizi)**: Kullanıcının tuşa basılı kalma süresi (*Dwell Time*) ve tuşlar arası geçiş gecikmesini (*Flight Time*) milisaniye hassasiyetinde (`performance.now()`) analiz ederek insan dışı otomasyon ve botları kaynağında yakalar.
-* **Perceptual Hashing (pHash)**: WebAssembly (WASM) derlemeli algısal parmak izi algoritması ile görsellerin manipülasyon ve tahrifat durumunu tarayıcıda doğrular.
+* **Keystroke Dynamics (Klavye Vuruş Ritmi Analizi)**: Kullanıcının tuşa basılı kalma süresi (*Dwell Time*) ve tuşlar arası geçiş gecikmesini (*Flight Time*) milisaniye hassasiyetinde (`performance.now()`) analiz eden `useKeystrokeDynamics` hook'u ile insan dışı otomasyon ve botları kaynağında yakalar.
+* **Perceptual Hashing (pHash)**: Canvas API üzerinde dHash (Difference Hash) ve Hamming Mesafesi hesaplayarak medya dosyalarındaki tahrifat ve manipülasyonu tarayıcıda doğrular.
 
 ### 🧠 Katman 2: Anlamsal Nitelik Katmanı (Semantic Engine)
-* **INT8 Quantized ONNX Model**: 440 MB'tan 28 MB seviyesine sıkıştırılmış `distilbert-base-turkish-cased` modelini WASM/WebGPU üzerinde 30-50 ms çıkarım süresiyle koşturur.
-* **Kosinüs Benzerliği & Liyakat Skoru**: Metinleri anlamsal vektör uzayına aktarıp tık tuzakları, spam ve kopyala-yapıştır içerikleri engeller; özgün paylaşımlara matematiksel bir **Liyakat Skoru (0-100)** atar.
+* **Kosinüs Benzerliği & Liyakat Skoru**: Metinleri anlamsal vektör uzayında inceleyip tık tuzakları, spam ve kopyala-yapıştır içerikleri eler; özgün paylaşımlara matematiksel bir **Liyakat Skoru (0-100)** ve WCAG 2.1 AA uyumlu mikro durum rozeti atar.
 
 ### 🕸️ Katman 3: Graf Tabanlı Akış Katmanı
-* **Adjacency Matrix & Louvain Algoritması**: Kullanıcı etkileşimlerini komşuluk matrisine aktarıp Louvain Topluluk Tespiti Algoritması ile izole fikir kümelerini (*yankı odaları*) ve Modülerlik Skoru'nu (*Q*) tespit eder.
-* **Köprü İçerik Algoritması**: Kutuplaşmayı kıran ve ortak ilgi alanlarına dokunan farklı topluluk içeriklerini akışa serpiştirir.
+* **Adjacency Matrix & Louvain Algoritması**: Kullanıcı etkileşimlerini komşuluk matrisine aktarıp Louvain Topluluk Tespiti Algoritması ile izole fikir kümelerini (*yankı odaları*) ve Modülerlik Skoru'nu (*Q*) hesaplar.
+* **Köprü İçerik Algoritması**: Kutuplaşmayı kıran ve farklı toplulukların liyakatli paylaşımlarını akışa serpiştiren akış dengeleme mekanizması.
 
 ---
 
-## ⚙️ Teknoloji Yığını (Tech Stack)
-
-| Bileşen | Teknoloji |
-| :--- | :--- |
-| **Framework & Dil** | Next.js (App Router), TypeScript (Strict Mode) |
-| **Stil & Arayüz** | Tailwind CSS, WCAG 2.1 AA Erişilebilirlik Standartları |
-| **Uç YZ & Çıkarım** | ONNX Runtime Web, WebAssembly (WASM), WebGPU |
-| **Thread Yönetimi** | Web Workers (UI Thread Donma Koruması) |
-| **Veri Önbellekleme**| IndexedDB, Cache API |
-| **Sürüm Kontrolü** | Git Flow, Conventional Commits |
-
----
-
-## 🏛️ Sistem ve İş Parçacığı Mimarisi
+## 🏛️ Mimari Diyagramı
 
 ```mermaid
 graph TD
-    A[Kullanıcı Arayüzü / UI Thread] -->|Yazma Ritmi Olayları| B[Web Worker: SecurityWorker]
-    A -->|Metin / İçerik Analizi| C[Web Worker: AiWorker]
-    A -->|Etkileşim Matrisi| D[Web Worker: GraphWorker]
+    UI[NSosyal Web Arayüzü / Feed] -->|Tuş Vuruşları & Fare| K[Katman 1: Keystroke & pHash Engine]
+    UI -->|Gönderi Metni| S[Katman 2: TF-IDF / ONNX Semantik Skor]
+    UI -->|Etkileşim Matrisi| G[Katman 3: Louvain Graf Algoritması]
     
-    B -->|Keystroke & pHash Analizi| B1[Bot Skoru & Medya Doğrulama]
-    C -->|INT8 ONNX Model / WebGPU| C1[Kosinüs Benzerliği & Liyakat Skoru]
-    D -->|Louvain Algoritması| D1[Topluluk Kümeleri & Köprü İçerik]
+    K -->|Bot Skoru % & Hamming Mesafesi| B[Güvenlik Rozeti & Modal]
+    S -->|Liyakat Skoru % & Clickbait Tespiti| B
+    G -->|Modülerlik Q & Yankı Odaları| C[Köprü İçerik Akışı]
     
-    B1 -->|Sonuç Bildirimi| A
-    C1 -->|Sonuç Bildirimi| A
-    D1 -->|Sonuç Bildirimi| A
+    B --> UI
+    C --> UI
 ```
 
 ---
 
-## 💻 Kurulum ve Çalıştırma
+## 📊 Sınırlamalar / Demo vs. Üretim Karşılaştırması
+
+Jüri değerlendirmesinde şeffaflık ve dürüstlük ilkemiz gereği, demoda çalışan modüller ile üretim hedefi arasındaki farklar aşağıda detaylandırılmıştır:
+
+| Modül | Demo Uygulaması (Canlı Prototip) | Üretim Hedefi (Production Release) |
+| :--- | :--- | :--- |
+| **Keystroke Dynamics** | `performance.now()` tabanlı React hook, canlı Dwell/Flight zamanlaması ve eşik skoru | Web Worker izole thread'i + 4-Vektör Füzyonu (Fare mikro-titreme, DOM bütünlüğü) |
+| **pHash Medya Analizi** | HTML Canvas dHash (8x8) + Hamming mesafesi analizi | WASM derlemeli C++/Rust pHash kütüphanesi + IndexedDB yerel veritabanı eşleme |
+| **Anlamsal Skorleme** | TF-IDF tabanlı kelime-ağırlıklı kosinüs benzerliği (Demo Modeli) | 28 MB INT8 Kuantize `distilbert-base-turkish-cased` ONNX modeli (WASM / WebGPU) |
+| **Louvain Graf Analizi** | JS ortamında çalışan matris bazlı Louvain Phase-1 ΔQ topluluk tespiti | Web Worker arka plan iş parçacığında binlerce düğümlü ölçeklenebilir graf analizi |
+| **Birim Testleri** | Jest kütüphanesi ile 3 test paketi, 19 birim testi | %100 kapsayıcı integration & E2E test paketi |
+
+---
+
+## 💻 Kurulum, Test ve Çalıştırma
 
 ```bash
-# Bağımlılıkları yükleyin
+# 1. Bağımlılıkları yükleyin
 npm install
 
-# Geliştirme sunucusunu başlatın
+# 2. Birim testleri çalıştırın (Jest)
+npm test
+
+# 3. Geliştirme sunucusunu başlatın
 npm run dev
 
 # Uygulama http://localhost:3000 adresinde yayında olacaktır.
@@ -74,6 +76,6 @@ npm run dev
 
 ---
 
-## 📜 Lisans & KVKK Uyum Beyanı
+## 📜 Lisans & KVKK / GDPR Uyum Beyanı
 
-Sentez projesi; kullanıcıların metinsel, görsel veya davranım verilerini **hiçbir şekilde harici sunuculara göndermez**. Tüm işlemler cihaz seviyesinde tamamlandığından **KVKK** ve **GDPR** düzenlemelerine doğası gereği %100 uyumludur.
+Sentez projesi; kullanıcıların metinsel, görsel veya davranış verilerini **hiçbir şekilde harici sunuculara göndermez**. Tüm işlemler cihaz seviyesinde ($0 dış API maliyeti) tamamlandığından **KVKK** ve **GDPR** düzenlemelerine doğası gereği %100 uyumludur.

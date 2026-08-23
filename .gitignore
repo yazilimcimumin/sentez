@@ -24,6 +24,10 @@
 .DS_Store
 *.pem
 
+# auto-generated tool config files
+AGENTS.md
+CLAUDE.md
+
 # debug
 npm-debug.log*
 yarn-debug.log*
