@@ -37,17 +37,17 @@ interface Post {
 const INITIAL_POSTS: Post[] = [
   {
     id: 'p1',
-    author: 'GZT',
-    handle: '@gzt',
-    avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=80&q=80',
+    author: 'Sentez AI Araştırma Lab',
+    handle: '@sentez_ai',
+    avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=80&q=80',
     time: '4dk',
-    text: '🔴 Ani Ören Yeri\'nde Selçuklu dönemine ait bir taş gün yüzüne çıkarıldı\n\n📌 Üzerinde "Hz. Muhammed" ismi 6 kez tekrarlanan eser, Anadolu\'daki Türk-İslam mirasını gözler önüne seriyor.',
-    img: 'https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?w=700&q=80',
-    likes: 9,
-    reposts: 1,
-    comments: 0,
-    views: 53,
-    badge: { status: 'verified', merit: 92, bot: 0.03, clickbait: false, tampered: false, ms: 32 },
+    text: '🚀 TEKNOFEST Sosyal İnovasyon yarışması için geliştirdiğimiz "Sentez" mimarisi yayında!\n\nYapay zekâ destekli güvenlik, dezenformasyon ve içerik doğrulama analizi artık merkezi sunuculara ihtiyaç duymadan doğrudan kullanıcı tarayıcısında (WASM/Edge) 35ms altında çalışıyor.',
+    img: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
+    likes: 342,
+    reposts: 89,
+    comments: 24,
+    views: 1450,
+    badge: { status: 'verified', merit: 96, bot: 0.02, clickbait: false, tampered: false, ms: 32 },
   },
   {
     id: 'p2',
@@ -55,12 +55,12 @@ const INITIAL_POSTS: Post[] = [
     handle: '@selin_yilmaz',
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&q=80',
     time: '14dk',
-    text: 'Sentez projemiz ONNX Runtime Web ve WebAssembly sayesinde yapay zekâ çıkarımını doğrudan kullanıcı tarayıcısında 35ms altında gerçekleştiriyor. Merkezi sunucu maliyeti: $0.',
-    likes: 142,
-    reposts: 38,
-    comments: 12,
-    views: 420,
-    badge: { status: 'verified', merit: 91, bot: 0.04, clickbait: false, tampered: false, ms: 34 },
+    text: 'Sentez mimarisinde KVKK ve GDPR uyumunu %100 doğal olarak sağlıyoruz. Kullanıcının klavye ritmi, görsel pHash parmak izi ve metinsel anlamsal vektörleri hiçbir harici sunucuya gönderilmeden cihaz seviyesinde işleniyor. $0 API maliyeti!',
+    likes: 184,
+    reposts: 42,
+    comments: 16,
+    views: 890,
+    badge: { status: 'verified', merit: 92, bot: 0.04, clickbait: false, tampered: false, ms: 34 },
   },
   {
     id: 'p3',
@@ -77,15 +77,16 @@ const INITIAL_POSTS: Post[] = [
   },
   {
     id: 'p4',
-    author: 'Ayşe Kaya',
-    handle: '@ayse_kaya',
+    author: 'Prof. Canan Dağ',
+    handle: '@canan_akademi',
     avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&q=80',
     time: '2sa',
-    text: 'Veri gizliliği odaklı yapay zekâ uygulamaları giderek önem kazanıyor. KVKK ve GDPR uyum maliyetleri düşünüldüğünde edge computing yaklaşımı çok daha sürdürülebilir.',
+    text: 'Sosyal medyada yankı odaları ve kutuplaşma ciddi bir sorun. Louvain topluluk tespiti algoritması ve Köprü İçerik mekanizması sayesinde algoritma seviyesinde kapsayıcılık sağlanabiliyor.',
+    img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
     likes: 203,
     reposts: 89,
     comments: 34,
-    views: 890,
+    views: 2100,
     badge: { status: 'verified', merit: 88, bot: 0.06, clickbait: false, tampered: false, ms: 37 },
     bridgeTag: '🌉 Köprü İçerik',
   },
@@ -108,7 +109,7 @@ function runLouvain(posts: Post[]) {
 
 export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [mediaEnabled, setMediaEnabled] = useState(true);
+  const [mediaOnly, setMediaOnly] = useState(false);
   const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS);
   const [text, setText] = useState('');
   const [mediaMode, setMediaMode] = useState<'none' | 'clean' | 'tampered'>('none');
@@ -223,9 +224,16 @@ export default function Home() {
   };
 
   const stories = [
-    { name: 'selcukbayra...', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=80' },
+    { name: 'sentez_ai', img: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=80&q=80' },
     { name: 'teknofest', img: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=80&q=80' },
+    { name: 'cezec_lab', img: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=80&q=80' },
+    { name: 'edge_tech', img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=80&q=80' },
   ];
+
+  // Medya filtresi: Medya sekmesi veya Medya toggle aktifse sadece görselleri göster
+  const filteredPosts = (activeTab === 'medya' || mediaOnly)
+    ? posts.filter((p) => !!p.img)
+    : posts;
 
   return (
     <div className={`min-h-screen flex justify-center ${
@@ -237,8 +245,13 @@ export default function Home() {
         <NSosyalLeftMenu
           isDarkMode={isDarkMode}
           onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
-          mediaEnabled={mediaEnabled}
-          onToggleMedia={() => setMediaEnabled(!mediaEnabled)}
+          mediaEnabled={mediaOnly}
+          onToggleMedia={() => {
+            const next = !mediaOnly;
+            setMediaOnly(next);
+            if (next) setActiveTab('medya');
+            else setActiveTab('akis');
+          }}
         />
 
         {/* 2. Main Feed Area */}
@@ -252,7 +265,10 @@ export default function Home() {
             {/* Tabs */}
             <div className="flex items-center gap-8 h-full">
               <button
-                onClick={() => setActiveTab('akis')}
+                onClick={() => {
+                  setActiveTab('akis');
+                  setMediaOnly(false);
+                }}
                 className={`relative h-full text-sm font-bold flex items-center transition-colors ${
                   activeTab === 'akis'
                     ? isDarkMode ? 'text-cyan-400' : 'text-blue-600'
@@ -265,14 +281,17 @@ export default function Home() {
                 )}
               </button>
               <button
-                onClick={() => setActiveTab('medya')}
+                onClick={() => {
+                  setActiveTab('medya');
+                  setMediaOnly(true);
+                }}
                 className={`relative h-full text-sm font-bold flex items-center transition-colors ${
                   activeTab === 'medya'
                     ? isDarkMode ? 'text-cyan-400' : 'text-blue-600'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                Medya
+                Medya ({posts.filter(p=>!!p.img).length})
                 {activeTab === 'medya' && (
                   <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full" />
                 )}
@@ -384,13 +403,13 @@ export default function Home() {
             </div>
 
             {/* Story Circles (NSosyal Signatures) */}
-            <div className="flex items-center gap-4 mt-4 pt-3 border-t border-slate-800/40">
+            <div className="flex items-center gap-4 mt-4 pt-3 border-t border-slate-800/40 overflow-x-auto">
               {stories.map((st) => (
-                <div key={st.name} className="flex flex-col items-center gap-1 cursor-pointer">
+                <div key={st.name} className="flex flex-col items-center gap-1 cursor-pointer shrink-0">
                   <div className="w-11 h-11 rounded-full p-0.5 bg-gradient-to-tr from-cyan-400 via-blue-500 to-purple-600">
                     <img src={st.img} className="w-full h-full rounded-full object-cover border-2 border-[#0f1117]" alt={st.name} />
                   </div>
-                  <span className="text-[10px] text-slate-400 truncate max-w-[60px]">{st.name}</span>
+                  <span className="text-[10px] text-slate-400 truncate max-w-[65px]">{st.name}</span>
                 </div>
               ))}
             </div>
@@ -398,7 +417,7 @@ export default function Home() {
 
           {/* Posts Feed */}
           <div>
-            {posts.map((post) => (
+            {filteredPosts.map((post) => (
               <article
                 key={post.id}
                 className={`p-4 border-b hover:bg-slate-900/20 transition-colors ${
@@ -446,7 +465,7 @@ export default function Home() {
                     </p>
 
                     {/* Media Preview (if exists) */}
-                    {post.img && mediaEnabled && (
+                    {post.img && (
                       <div className="relative rounded-2xl overflow-hidden mb-3 border border-slate-800/80">
                         <img src={post.img} className="w-full h-64 object-cover" alt="" />
                         <div
