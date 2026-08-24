@@ -8,7 +8,7 @@
 
 **Sentez**, sosyal medya platformlarındaki (örneğin **NSosyal**) dezenformasyon, otomasyon (botnet) işgalleri, tık tuzakları (clickbait) ve toplumsal kutuplaşmayı derinleştiren filtre balonları (yankı odaları) krizlerine karşı kurgulanmış proaktif ve istemci taraflı bir güvenlik katmanıdır.
 
-Sentez, ayrı bir platform veya kopyalanmış bağımsız bir sosyal ağ değildir. NSosyal gibi mevcut sosyal medya platformlarının web arayüzlerine doğrudan bir **istemci katmanı (client-side layer)** olarak entegre edilmek üzere tasarlanmıştır. Merkezi bulut sunucularına ve yüksek maliyetli kapalı kutu yapay zekâ API'lerine (OpenAI, Perspective vb.) olan bağımlılığı tamamen ortadan kaldırarak tüm çıkarım ve matematiksel hesaplamaları **doğrudan kullanıcının web tarayıcısında (ve ilerleyen aşamada mobil üzerinde de)** gerçekleştirir.
+Sentez, ayrı bir platform veya kopyalanmış bağımsız bir sosyal ağ değildir. NSosyal gibi mevcut sosyal medya platformlarının web arayüzlerine doğrudan bir **istemci katmanı (client-side layer)** olarak entegre edilmek üzere tasarlanmıştır. Merkezi bulut sunucularına ve yüksek maliyetli kapalı kutu yapay zekâ API'lerine (OpenAI, Perspective vb.) olan bağımlılığı tamamen ortadan kaldırarak tüm çıkarım ve matematiksel hesaplamaları **doğrundan kullanıcının web tarayıcısında (ve ilerleyen aşamada mobil üzerinde de)** gerçekleştirir.
 
 ### 🎨 NSosyal Birebir Arayüz ve Sentez Katmanı Özellikleri:
 * **Sol Menü**: NSosyal **"N BETA"** logosu, **"Nod Oyna"** menü kalemi, **"Medya"** ve **"Karanlık Mod"** geçiş anahtarları ile birebir görsel uyum.
@@ -64,6 +64,20 @@ Sistemin istemci yükü ve sunucusuz ölçeklenebilirliği **k6 load testing** a
 | **Biyometrik Bot Tespiti** | Keystroke Dynamics (`performance.now()`) | %94.1 Sentetik Bot Tespit Oranı | Canlı İstemci Ritim Analizi |
 | **Topluluk Modülerliği** | `graphology-communities-louvain` | Modülerlik $Q$ ve Yankı Odası Tespiti | İstemci Tarafı Graf Simülasyonu |
 | **Birim Test Paketi** | Jest (19 Unit Test) | **19/19 PASS** (%100 Başarı) | Automated Unit Testing |
+
+---
+
+## 🛣️ Sınırlamalar ve Gelecek Aşamalar (Yol Haritası)
+
+Jüri değerlendirmesinde şeffaflık ilkemiz gereği, mevcut istemci prototipi ile üretim aşamasındaki nihai hedefler karşılaştırmalı olarak sunulmuştur:
+
+| Modül | Prototip / Canlı Demo Durumu | Üretim & Final Aşaması Hedefi |
+| :--- | :--- | :--- |
+| **Keystroke Dynamics** | `performance.now()` tabanlı canlı Dwell/Flight zamanlaması | Web Worker izole thread'i + 4-Vektör Biyometrik Füzyon (Fare mikro-titreme, DOM bütünlüğü) |
+| **pHash Medya Analizi** | HTML Canvas dHash (8x8) + Hamming mesafesi prototipi | WASM derlemeli C++/Rust pHash veritabanı + Derin Öğrenme Görsel Tahrifat Modelleri |
+| **Anlamsal Skorlama** | Fine-Tuned `bert-base-turkish-cased` + ONNX İstemci Motoru | WebGPU destekli 28 MB INT8 ONNX tarayıcı içi canlı çıkarım hattı |
+| **Louvain Graf Analizi** | Tarayıcıda `graphology-communities-louvain` ile gerçek Modülerlik $Q$ hesabı | Sunucu tarafı çoklu kullanıcı verisi senkronizasyonu + binlerce düğümlü ölçeklenebilir graf |
+| **Test ve Doğrulama** | Jest birim testleri (19/19 PASS) + k6 Yük Testi | Ücretsiz sunucu altyapısıyla gerçek kullanıcı etkileşimleri üzerinden canlı doğrulama |
 
 ---
 
