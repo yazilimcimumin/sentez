@@ -6,23 +6,30 @@
 
 ## 📌 Proje Hakkında & NSosyal Entegrasyonu
 
-**Sentez**, sosyal medya platformlarındaki (örneğin **NSosyal**) dezenformasyon, otomasyon (botnet) işgalleri, tık tuzakları (clickbait) ve toplumsal kutuplaşmayı derinleştiren filtre balonları (yankı odaları) krizlerine karşı kurgulanmış proaktif ve istemci taraflı bir güvenlik mimarisidir.
+**Sentez**, sosyal medya platformlarındaki (örneğin **NSosyal**) dezenformasyon, otomasyon (botnet) işgalleri, tık tuzakları (clickbait) ve toplumsal kutuplaşmayı derinleştiren filtre balonları (yankı odaları) krizlerine karşı kurgulanmış proaktif ve istemci taraflı bir güvenlik katmanıdır.
 
-Sentez, NSosyal gibi mevcut sosyal medya platformlarının web arayüzlerine doğrudan bir **istemci katmanı (client-side layer)** olarak entegre edilmek üzere tasarlanmıştır. Merkezi bulut sunucularına ve yüksek maliyetli kapalı kutu yapay zekâ API'lerine (OpenAI, Perspective vb.) olan bağımlılığı tamamen ortadan kaldırarak tüm çıkarım ve matematiksel hesaplamaları **doğrudan kullanıcının web tarayıcısında** gerçekleştirir.
+Sentez, ayrı bir platform veya kopyalanmış bağımsız bir sosyal ağ değildir. NSosyal web arayüzünün üzerine doğrudan **tümleşik bir istemci uzantısı (browser extension / embedded layer)** olarak giydirilmiştir. 
+
+### 🎨 NSosyal Birebir Arayüz ve Sentez Katmanı Özellikleri:
+* **Sol Menü**: NSosyal **"N BETA"** logosu, **"Nod Oyna"** menü kalemi, **"Medya"** ve **"Karanlık Mod"** geçiş anahtarları ile birebir görsel uyum.
+* **Üst Bar & Akış**: NSosyal **"Akış / Medya"** sekmeleri, arama çubuğu ve kullanıcı profil menüsü.
+* **Gönderi Kartları**: NSosyal'in karakteristik **`🚀 Roket`** (Beğeni), `💬 Yorum`, `🔄 Repost`, `📊 Görüntülenme` eylem butonları ve başlıkta WCAG 2.1 AA uyumlu Sentez güvenlik rozetleri.
+* **Sağ Panel**: En üstte orijinal NSosyal **"Popüler"** hashtag listesi (`#TeknofestMaviVatan`, `#TEKNOFEST` vb.); hemen altında açılır-kapanır **`"🛡️ Sentez Analiz Paneli ▾"`** bloğu.
+* **Yüzen Demo Kontrolü**: Sağ-alt köşede konumlanan **`🔬 Sentez Demo Kontrolleri`** kutucuğu ile jüri sunumunda anlık bot saldırısı simülasyonu, köprü içerik enjeksiyonu ve **$0 Edge Metrikleri** modal erişimi.
 
 ---
 
 ## 🚀 3 Ana Katman ve Özellikler
 
 ### 🔒 Katman 1: İstemci Güvenlik Katmanı
-* **Keystroke Dynamics (Klavye Vuruş Ritmi Analizi)**: Kullanıcının tuşa basılı kalma süresi (*Dwell Time*) ve tuşlar arası geçiş gecikmesini (*Flight Time*) milisaniye hassasiyetinde (`performance.now()`) analiz eden `useKeystrokeDynamics` hook'u ile insan dışı otomasyon ve botları kaynağında yakalar.
-* **Perceptual Hashing (pHash)**: Canvas API üzerinde dHash (Difference Hash) ve Hamming Mesafesi hesaplayarak medya dosyalarındaki tahrifat ve manipülasyonu tarayıcıda doğrular.
+* **Keystroke Dynamics (Klavye Vuruş Ritmi Analizi)**: Kullanıcının tuşa basılı kalma süresi (*Dwell Time*) ve tuşlar arası geçiş gecikmesini (*Flight Time*) milisaniye hassasiyetinde (`performance.now()`) analiz eden `useKeystrokeDynamics` hook'u ile otomasyon ve botnet'leri kaynağında yakalar.
+* **Perceptual Hashing (pHash)**: HTML Canvas API üzerinde dHash (Difference Hash) ve Hamming Mesafesi hesaplayarak medya dosyalarındaki tahrifat ve manipülasyonu tarayıcıda doğrular.
 
 ### 🧠 Katman 2: Anlamsal Nitelik Katmanı (Semantic Engine)
-* **Kosinüs Benzerliği & Liyakat Skoru**: Metinleri anlamsal vektör uzayında inceleyip tık tuzakları, spam ve kopyala-yapıştır içerikleri eler; özgün paylaşımlara matematiksel bir **Liyakat Skoru (0-100)** ve WCAG 2.1 AA uyumlu mikro durum rozeti atar.
+* **Kosinüs Benzerliği & Liyakat Skoru**: Metinleri anlamsal vektör uzayında inceleyip tık tuzakları, spam ve kopyala-yapıştır içerikleri eler; özgün paylaşımlara matematiksel bir **Liyakat Skoru (0-100)** ve WCAG 2.1 AA uyumlu durum rozeti atar.
 
-### 🕸️ Katman 3: Graf Tabanlı Akış Katmanı
-* **Adjacency Matrix & Louvain Algoritması**: Kullanıcı etkileşimlerini komşuluk matrisine aktarıp Louvain Topluluk Tespiti Algoritması ile izole fikir kümelerini (*yankı odaları*) ve Modülerlik Skoru'nu (*Q*) hesaplar.
+### 🕸️ Katman 3: Graf Tabanlı Akış Katmanı (`graphology-communities-louvain`)
+* **Gerçek Grafoloji ve Louvain Kütüphanesi**: İstemci tarafında `graphology` ve `graphology-communities-louvain` kütüphaneleri kullanılarak kullanıcı etkileşim matrisi yönsüz bir graf ağında modellenir. Louvain topluluk tespiti algoritması koşturularak izole fikir kümeleri (*yankı odaları*) ve **Modülerlik Skoru ($Q$)** matematiksel olarak hesaplanır.
 * **Köprü İçerik Algoritması**: Kutuplaşmayı kıran ve farklı toplulukların liyakatli paylaşımlarını akışa serpiştiren akış dengeleme mekanizması.
 
 ---
@@ -31,11 +38,11 @@ Sentez, NSosyal gibi mevcut sosyal medya platformlarının web arayüzlerine do�
 
 ```mermaid
 graph TD
-    UI[NSosyal Web Arayüzü / Feed] -->|Tuş Vuruşları & Fare| K[Katman 1: Keystroke & pHash Engine]
-    UI -->|Gönderi Metni| S[Katman 2: TF-IDF / ONNX Semantik Skor]
-    UI -->|Etkileşim Matrisi| G[Katman 3: Louvain Graf Algoritması]
+    UI[NSosyal Web Arayüzü / Feed] -->|Tuş Vuruşları & pHash| K[Katman 1: Keystroke & pHash Engine]
+    UI -->|Gönderi Metni| S[Katman 2: Vektör Semantik Motor]
+    UI -->|Etkileşim Matrisi| G[Katman 3: Graphology Louvain Engine]
     
-    K -->|Bot Skoru % & Hamming Mesafesi| B[Güvenlik Rozeti & Modal]
+    K -->|Bot Skoru % & Hamming Mesafesi| B[Güvenlik Rozetleri & Analiz Paneli]
     S -->|Liyakat Skoru % & Clickbait Tespiti| B
     G -->|Modülerlik Q & Yankı Odaları| C[Köprü İçerik Akışı]
     
@@ -53,8 +60,8 @@ Jüri değerlendirmesinde şeffaflık ve dürüstlük ilkemiz gereği, demoda ç
 | :--- | :--- | :--- |
 | **Keystroke Dynamics** | `performance.now()` tabanlı React hook, canlı Dwell/Flight zamanlaması ve eşik skoru | Web Worker izole thread'i + 4-Vektör Füzyonu (Fare mikro-titreme, DOM bütünlüğü) |
 | **pHash Medya Analizi** | HTML Canvas dHash (8x8) + Hamming mesafesi analizi | WASM derlemeli C++/Rust pHash kütüphanesi + IndexedDB yerel veritabanı eşleme |
-| **Anlamsal Skorleme** | TF-IDF tabanlı kelime-ağırlıklı kosinüs benzerliği (Demo Modeli) | 28 MB INT8 Kuantize `distilbert-base-turkish-cased` ONNX modeli (WASM / WebGPU) |
-| **Louvain Graf Analizi** | JS ortamında çalışan matris bazlı Louvain Phase-1 ΔQ topluluk tespiti | Web Worker arka plan iş parçacığında binlerce düğümlü ölçeklenebilir graf analizi |
+| **Anlamsal Skorlama** | Vektör tabanlı TF-IDF kelime-ağırlıklı kosinüs benzerliği | 28 MB INT8 Kuantize `distilbert-base-turkish-cased` ONNX modeli (WASM / WebGPU) |
+| **Louvain Graf Analizi** | Tarayıcıda `graphology-communities-louvain` ile gerçek Modülerlik $Q$ hesabı | Web Worker arka plan iş parçacığında binlerce düğümlü ölçeklenebilir graf analizi |
 | **Birim Testleri** | Jest kütüphanesi ile 3 test paketi, 19 birim testi | %100 kapsayıcı integration & E2E test paketi |
 
 ---
@@ -65,7 +72,7 @@ Jüri değerlendirmesinde şeffaflık ve dürüstlük ilkemiz gereği, demoda ç
 # 1. Bağımlılıkları yükleyin
 npm install
 
-# 2. Birim testleri çalıştırın (Jest)
+# 2. Birim testleri çalıştırın (Jest - 19/19 PASS)
 npm test
 
 # 3. Geliştirme sunucusunu başlatın
