@@ -11,6 +11,8 @@
     "test:watch": "jest --config jest.config.json --watch"
   },
   "dependencies": {
+    "graphology": "^0.26.0",
+    "graphology-communities-louvain": "^2.0.2",
     "next": "^14.2.24",
     "onnxruntime-web": "^1.21.0",
     "react": "^18.3.1",
