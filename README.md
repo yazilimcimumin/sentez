@@ -19,15 +19,15 @@ Sentez, ayrı bir platform veya kopyalanmış bağımsız bir sosyal ağ değild
 
 ---
 
-## 🚀 3 Ana Katman ve Doğrulanmış Mimariler
+## 🚀 3 Ana Katman ve Çalışma Mantığı
 
 ### 🔒 Katman 1: İstemci Güvenlik Katmanı
 * **Keystroke Dynamics (Klavye Vuruş Ritmi Analizi)**: Kullanıcının tuşa basılı kalma süresi (*Dwell Time*) ve tuşlar arası geçiş gecikmesini (*Flight Time*) milisaniye hassasiyetinde (`performance.now()`) analiz eden `useKeystrokeDynamics` hook'u ile otomasyon ve botnet'leri kaynağında yakalar.
 * **Perceptual Hashing (pHash)**: HTML Canvas API üzerinde dHash (Difference Hash) ve Hamming Mesafesi hesaplayarak medya dosyalarındaki tahrifat ve manipülasyonu doğrular.
 
-### 🧠 Katman 2: Anlamsal Nitelik & Model İnce Ayar (Semantic Engine & Fine-Tuning)
-* **DistilBERT Türkçe Model Eğitimi & İnce Ayar**: Türkçe dezenformasyon ve tık tuzağı tespiti için `dbmdz/bert-base-turkish-cased` mimarisi temel alınarak fine-tuning gerçekleştirilmiştir (2×10⁻⁵ öğrenme oranı, AdamW optimize edici, batch size 32, 5-katlı çapraz doğrulama).
-* **Elde Edilen Başarı Metrikleri**: Model test veri setinde **%92.4 doğruluk (accuracy)**, **%91.8 kesinlik (precision)** ve **0.95 ROC-AUC** başarımına ulaşmıştır. Tarayıcı içi INT8 ONNX çıkarım süresi **35–45 ms** aralığında ölçülmüştür. Web demoda anında yüklenme için kuantize ONNX istemci motoru koşturulmaktadır.
+### 🧠 Katman 2: Anlamsal Nitelik Katmanı (Semantic Engine)
+* **Kosinüs Benzerliği & Liyakat Skoru**: Metinleri anlamsal vektör uzayında inceleyip tık tuzakları, spam ve kopyala-yapıştır içerikleri eler; özgün paylaşımlara matematiksel bir Liyakat Skoru (0-100) atar. Canlı demoda TF-IDF tabanlı vektörleştirme motoru koşmaktadır.
+* **Model İnce Ayar Hattı (Fine-Tuning Pipeline)**: `dbmdz/bert-base-turkish-cased` temel alınarak Türkçe dezenformasyon/tık tuzağı sınıflandırması için eğitim hattı (2×10⁻⁵ öğrenme oranı, AdamW, batch size 32, 5-katlı çapraz doğrulama) hazırlanmış olup, mentörlük sürecinde (2-7 Eylül) tamamlanıp INT8/ONNX formatına dönüştürülecektir.
 
 ### 🕸️ Katman 3: Graf Tabanlı Akış Katmanı (`graphology-communities-louvain`)
 * **Gerçek Grafoloji ve Louvain Kütüphanesi**: İstemci tarafında `graphology` ve `graphology-communities-louvain` kütüphaneleri kullanılarak kullanıcı etkileşim matrisi yönsüz bir graf ağında modellenir. Louvain topluluk tespiti algoritması koşturularak izole fikir kümeleri (*yankı odaları*) ve **Modülerlik Skoru ($Q$)** matematiksel olarak hesaplanır.
@@ -40,7 +40,7 @@ Sentez, ayrı bir platform veya kopyalanmış bağımsız bir sosyal ağ değild
 ```mermaid
 graph TD
     UI[NSosyal Web Arayüzü / Feed] -->|Tuş Vuruşları & pHash| K[Katman 1: Keystroke & pHash Engine]
-    UI -->|Gönderi Metni| S[Katman 2: Fine-Tuned ONNX Semantik Motor]
+    UI -->|Gönderi Metni| S[Katman 2: Vektör Semantik Motor]
     UI -->|Etkileşim Matrisi| G[Katman 3: Graphology Louvain Engine]
     
     K -->|Bot Skoru % & Hamming Mesafesi| B[Güvenlik Rozetleri & Analiz Paneli]
@@ -53,17 +53,15 @@ graph TD
 
 ---
 
-## 📊 Performans, Testler ve Doğrulama (k6 Load Testing)
+## 📊 Performans ve Doğrulama Durumu
 
-Sistemin istemci yükü ve sunucusuz ölçeklenebilirliği **k6 load testing** aracı ile simüle edilmiş ve test edilmiştir:
-
-| Modül / Analiz | Eğitilmiş Model / Yöntem | Ölçülen Başarım & Performans | Test Yöntemi |
-| :--- | :--- | :--- | :--- |
-| **Anlamsal Model (Katman 2)** | Fine-Tuned `bert-base-turkish-cased` | **%92.4 Doğruluk**, **%91.8 Kesinlik**, ROC-AUC **0.95** | 5-Fold Cross-Validation |
-| **Çıkarım Gecikmesi (Inference)** | INT8 Kuantize ONNX Web | **35 – 45 ms** / sorgu | k6 & Browser Performance Benchmarks |
-| **Biyometrik Bot Tespiti** | Keystroke Dynamics (`performance.now()`) | %94.1 Sentetik Bot Tespit Oranı | Canlı İstemci Ritim Analizi |
-| **Topluluk Modülerliği** | `graphology-communities-louvain` | Modülerlik $Q$ ve Yankı Odası Tespiti | İstemci Tarafı Graf Simülasyonu |
-| **Birim Test Paketi** | Jest (19 Unit Test) | **19/19 PASS** (%100 Başarı) | Automated Unit Testing |
+| Modül | Durum | Kaynak |
+| :--- | :--- | :--- |
+| Çıkarım/altyapı gecikmesi | Ölçüldü | k6 yük testi (sentetik istemci simülasyonu) |
+| Biyometrik bot tespiti (keystroke) | Canlı çalışıyor | Gerçek zamanlı client-side skor |
+| Louvain modülerlik (Q) | Canlı çalışıyor | `graphology-communities-louvain`, demo graf |
+| Jest birim testleri | Tamamlandı | 19/19 PASS |
+| Semantik model doğruluğu (hedef: %92+, ROC-AUC 0.95) | **Fine-tuning sürecinde** | 5-Fold CV planlanmış, mentörlük döneminde tamamlanacak |
 
 ---
 
@@ -75,7 +73,7 @@ Jüri değerlendirmesinde şeffaflık ilkemiz gereği, mevcut istemci prototipi 
 | :--- | :--- | :--- |
 | **Keystroke Dynamics** | `performance.now()` tabanlı canlı Dwell/Flight zamanlaması | Web Worker izole thread'i + 4-Vektör Biyometrik Füzyon (Fare mikro-titreme, DOM bütünlüğü) |
 | **pHash Medya Analizi** | HTML Canvas dHash (8x8) + Hamming mesafesi prototipi | WASM derlemeli C++/Rust pHash veritabanı + Derin Öğrenme Görsel Tahrifat Modelleri |
-| **Anlamsal Skorlama** | Fine-Tuned `bert-base-turkish-cased` + ONNX İstemci Motoru | WebGPU destekli 28 MB INT8 ONNX tarayıcı içi canlı çıkarım hattı |
+| **Anlamsal Skorlama** | TF-IDF Vektör İstemci Motoru | Mentörlük evresinde eğitilen INT8 ONNX tarayıcı içi çıkarım hattı |
 | **Louvain Graf Analizi** | Tarayıcıda `graphology-communities-louvain` ile gerçek Modülerlik $Q$ hesabı | Sunucu tarafı çoklu kullanıcı verisi senkronizasyonu + binlerce düğümlü ölçeklenebilir graf |
 | **Test ve Doğrulama** | Jest birim testleri (19/19 PASS) + k6 Yük Testi | Ücretsiz sunucu altyapısıyla gerçek kullanıcı etkileşimleri üzerinden canlı doğrulama |
 
